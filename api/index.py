@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # 2. Fail-Safe Token Loading
 # If the token is missing, we won't crash immediately. We'll just log it.
-TOKEN = os.environ.get('BOT_TOKEN')
+TOKEN = '7629772581:AAEYKPQCRV4RzYRdAQ3H3IJFGzJH7O63isQ'
 bot = None
 
 if TOKEN:
