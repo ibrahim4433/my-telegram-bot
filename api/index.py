@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # --- CONFIGURATION ---
 # Replace with your REAL token
-TOKEN = 'YOUR_REAL_TOKEN_HERE' 
+TOKEN = '7629772581:AAEYKPQCRV4RzYRdAQ3H3IJFGzJH7O63isQ' 
 
 # Initialize Bot
 bot = telebot.TeleBot(TOKEN, threaded=False)
