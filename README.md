@@ -5,25 +5,35 @@ No credit card required. No server maintenance.
 
 🚀 Quick Start
 
-1. Deploy to Vercel
+Option 1: One-Click Deploy
 
 Click the button below to fork this repo and deploy it to Vercel automatically.
 
-<!-- REPLACE 'YOUR_GITHUB_USERNAME' and 'YOUR_REPO_NAME' BELOW WITH YOUR ACTUAL DETAILS -->
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ibrahim4433/my-telegram-bot&env=BOT_TOKEN&project-name=my-telegram-bot&repository-name=my-telegram-bot)
 
-2. Configure Vercel
+Important: You must edit this README.md file and replace YOUR_GITHUB_USERNAME and YOUR_REPO_NAME in the link above with your actual GitHub details for this to work!
 
-Vercel will ask for a BOT_TOKEN. Paste your token from @BotFather.
+Option 2: Manual Deploy (If the button fails)
 
-Wait for the deployment to finish.
+Fork this repository to your own GitHub account.
 
-Click "Continue to Dashboard".
+Go to Vercel.com and log in.
 
-Visit your new Vercel URL (e.g., https://my-telegram-bot.vercel.app). You should see "Bot is running!".
+Click "Add New..." -> "Project".
+
+Import the repository you just forked.
+
+In the Environment Variables section, add:
+
+Key: BOT_TOKEN
+
+Value: Your_Telegram_Bot_Token
+
+Click Deploy.
 
 3. Connect Telegram (Set Webhook)
 
-You must tell Telegram to send messages to your new Vercel app.
+Once deployed, you must tell Telegram where your bot lives.
 Open your web browser and visit this URL (replace the placeholders):
 
 [https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook?url=https://YOUR_VERCEL_DOMAIN.vercel.app/api/index](https://api.telegram.org/botYOUR_BOT_TOKEN/setWebhook?url=https://YOUR_VERCEL_DOMAIN.vercel.app/api/index)
@@ -35,7 +45,7 @@ Done! Your bot is now live 24/7.
 
 🛠 How to Edit the Bot
 
-Go to your GitHub repository (the one Vercel created).
+Go to your GitHub repository.
 
 Open bot.py.
 
