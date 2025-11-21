@@ -1,65 +1,64 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import telebot
-import os
 import logging
 
-# 1. Setup Logging (This helps you see errors in Vercel logs)
+# Initialize Flask
+app = Flask(__name__)
+
+# Setup Logging (This enables logs in Vercel)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-
-# 2. Fail-Safe Token Loading
-# If the token is missing, we won't crash immediately. We'll just log it.
+# --- CONFIGURATION ---
+# Replace this with your actual token
 TOKEN = '7629772581:AAEYKPQCRV4RzYRdAQ3H3IJFGzJH7O63isQ'
-bot = None
 
-if TOKEN:
-    try:
-        # threaded=False is CRITICAL for Vercel/Serverless
-        bot = telebot.TeleBot(TOKEN, threaded=False)
-        logger.info("Bot initialized successfully.")
-    except Exception as e:
-        logger.error(f"Bot failed to start: {e}")
-else:
-    logger.warning("No BOT_TOKEN found in environment variables!")
+# Initialize Bot
+bot = telebot.TeleBot(TOKEN, threaded=False)
 
-# 3. The Webhook Route (Standard Vercel Path)
 @app.route('/api/index', methods=['POST'])
 def webhook():
-    # If bot didn't start, return error but don't crash server
-    if not bot:
-        return jsonify({"error": "Bot not initialized. Check BOT_TOKEN."}), 500
+    # 1. Check if content type is correct
+    if request.headers.get('content-type') == 'application/json':
+        
+        # 2. Get raw data
+        json_string = request.get_data().decode('utf-8')
+        
+        # 3. LOG THE RAW MESSAGE (This will show in Vercel logs)
+        print(f"DEBUG: Received Data: {json_string}")
 
-    try:
-        if request.headers.get('content-type') == 'application/json':
-            json_string = request.get_data().decode('utf-8')
+        try:
+            # 4. Parse update
             update = telebot.types.Update.de_json(json_string)
+            
+            # 5. Process update
             bot.process_new_updates([update])
-            return 'OK', 200
-        else:
-            return 'Forbidden', 403
+            print("DEBUG: Update processed successfully")
+            return ''
+        except Exception as e:
+            # 6. Catch errors
+            print(f"ERROR: Bot failed to process update: {e}")
+            return 'Error', 500
+    else:
+        return 'Forbidden', 403
+
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    print("DEBUG: /start command received!")
+    try:
+        bot.reply_to(message, "It works! I am alive on Vercel.")
+        print("DEBUG: Reply sent successfully")
     except Exception as e:
-        logger.error(f"Error processing webhook: {e}")
-        return 'Error', 500
+        print(f"ERROR: Could not send reply: {e}")
 
-# 4. Health Check Route
-# Visit https://your-app.vercel.app/api/index to see if it's alive
-@app.route('/api/index', methods=['GET'])
-def health_check():
-    status = "Running"
-    if not TOKEN:
-        status = "Running (Warning: No Token)"
-    elif not bot:
-        status = "Running (Error: Bot Init Failed)"
-    
-    return jsonify({
-        "status": status,
-        "platform": "Vercel",
-        "token_set": bool(TOKEN)
-    })
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    print(f"DEBUG: Text received: {message.text}")
+    try:
+        bot.reply_to(message, "You said: " + message.text)
+        print("DEBUG: Reply sent successfully")
+    except Exception as e:
+        print(f"ERROR: Could not send reply: {e}")
 
-# 5. Vercel Entry Point
-# This 'app' variable is what Vercel looks for
 if __name__ == "__main__":
     app.run(debug=True)
